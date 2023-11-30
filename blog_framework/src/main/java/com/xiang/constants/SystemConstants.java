@@ -11,4 +11,7 @@ public class SystemConstants {
     //默认分页页容量
     public static final int PAGE_SIZE = 10;
     public static final String CATEGORY_NORMAL = "0";
+
+
+    public static final int Link_STATUS_NORMAL = 0;
 }
