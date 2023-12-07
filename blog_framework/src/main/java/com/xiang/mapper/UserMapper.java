@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 /**
 * @author chenwentao
 * @description 针对表【sys_user(用户表)】的数据库操作Mapper
-* @createDate 2023-11-30 09:25:24
+* @createDate 2023-12-06 14:29:42
 * @Entity com.xiang.domain/entity.User
 */
 

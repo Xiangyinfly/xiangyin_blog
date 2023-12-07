@@ -32,6 +32,6 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
             result = ResponseResult.errorResult(AppHttpCodeEnum.SYSTEM_ERROR.getCode(),"认证或授权失败");
         }
         //响应给前端
-        WebUtils.renderString(response, JacksonUtils.toJsonString(request));
+        WebUtils.renderString(response, JacksonUtils.toJsonString(result));
     }
 }

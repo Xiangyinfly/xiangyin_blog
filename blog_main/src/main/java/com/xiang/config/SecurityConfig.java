@@ -34,7 +34,8 @@ public class SecurityConfig {
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(a -> a
                         .requestMatchers("/login").anonymous()
-                        .requestMatchers("/logout").anonymous()
+                        //.requestMatchers("/link/getAllLink").authenticated()
+                        .requestMatchers("/logout").authenticated()
                         .anyRequest().permitAll());
 
 
