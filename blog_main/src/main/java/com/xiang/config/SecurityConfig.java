@@ -36,6 +36,8 @@ public class SecurityConfig {
                         .requestMatchers("/login").anonymous()
                         //.requestMatchers("/link/getAllLink").authenticated()
                         .requestMatchers("/logout").authenticated()
+                        .requestMatchers("/user/userInfo").authenticated()
+                        .requestMatchers("/upload").authenticated()
                         .anyRequest().permitAll());
 
 
@@ -44,7 +46,7 @@ public class SecurityConfig {
         http.exceptionHandling(e -> e.authenticationEntryPoint(authenticationEntryPoint).accessDeniedHandler(accessDeniedHandler));
 
         http.csrf(AbstractHttpConfigurer::disable);
-        http.cors(AbstractHttpConfigurer::disable);
+        //http.cors(c -> c.);
 
         http.logout(AbstractHttpConfigurer::disable);
 

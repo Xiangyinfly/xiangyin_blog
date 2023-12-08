@@ -3,6 +3,7 @@ package com.xiang.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xiang.constants.SystemConstants;
 import com.xiang.domain.ResponseResult;
 import com.xiang.domain.entity.Article;
 import com.xiang.domain.entity.Comment;
@@ -31,11 +32,13 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     @Autowired
     private UserService userService;
     @Override
-    public ResponseResult getCommentList(Long articleId, Integer pageNum, Integer pageSize) {
+    public ResponseResult getCommentList(String commentType, Long articleId, Integer pageNum, Integer pageSize) {
         LambdaQueryWrapper<Comment> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Comment::getArticleId,articleId);
+        //当commentType为0的时候才进行articleId的过滤
+        queryWrapper.eq(SystemConstants.ARTICLE_COMMENT.equals(commentType),Comment::getArticleId,articleId);
         //根评论的rootId为-1
         queryWrapper.eq(Comment::getRootId,-1);
+        queryWrapper.eq(Comment::getType,commentType);
         Page<Comment> page = new Page<>(pageNum, pageSize);
         page(page,queryWrapper);
         List<CommentVo> commentVoList = toCommentVoList(page.getRecords());
