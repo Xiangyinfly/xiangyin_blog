@@ -165,6 +165,7 @@ public class RedisCache
         }
     }
 
+
     /**
      * 获得缓存的Map
      *
@@ -234,5 +235,9 @@ public class RedisCache
     public Collection<String> keys(final String pattern)
     {
         return redisTemplate.keys(pattern);
+    }
+
+    public void incrementCacheMapValue(String key,String hKey,long v){
+        redisTemplate.boundHashOps(key).increment(hKey, v);
     }
 }
