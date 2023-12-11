@@ -33,11 +33,8 @@ public class SecurityConfig {
         http
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(a -> a
-                        .requestMatchers("/login").anonymous()
-                        //.requestMatchers("/link/getAllLink").authenticated()
-                        .requestMatchers("/logout").authenticated()
-                        .requestMatchers("/user/userInfo").authenticated()
-                        .requestMatchers("/upload").authenticated()
+                        .requestMatchers("/user/login").anonymous()
+                        .requestMatchers("/getInfo").authenticated()
                         .anyRequest().permitAll());
 
 
