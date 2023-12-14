@@ -44,36 +44,47 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu>
         List<Menu> menuList = null;
         if (SecurityUtils.isAdmin()) {
             menuList = menuMapper.selectAllRouterMenu();
+        } else {
+            menuList = menuMapper.selectRouterMenuTreeByUserId(userId);
         }
-        menuList = menuMapper.selectRouterMenuTreeByUserId(userId);
 
         //构建tree
-        List<Menu> menuTree = builderMenuTree(menuList,0L);
+        List<Menu> menuTree = buildMenuTree(menuList,0L);
+        //List<Menu> menuTree = builderMenuTree(menuList,0L);
         return menuTree;
     }
 
-    //构建树
-    private List<Menu> builderMenuTree(List<Menu> menuList, long parentId) {
+    //构建树型结构
+    private List<Menu> buildMenuTree(List<Menu> menuList, long parentId) {
         List<Menu> menuTree = menuList.stream()
                 .filter(menu -> menu.getParentId().equals(parentId))
                 .collect(Collectors.toList());
 
-        menuTree.forEach(menu -> menu.setChildren(getChildren(menu, menuList)));
+        menuTree.forEach(menu -> menu.setChildren(buildMenuTree(menuList,menu.getId())));
 
         return menuTree;
     }
 
-    private List<Menu> getChildren(Menu menu, List<Menu> menuList) {
-        List<Menu> childrenList = menuList.stream()
-                .filter(m -> m.getParentId().equals(menu.getId()))
-                .collect(Collectors.toList());
-
-        childrenList.forEach(child -> child.setChildren(getChildren(child, menuList)));
-
-        return childrenList;
-    }
-
-
+    //构建树
+//    private List<Menu> builderMenuTree(List<Menu> menuList, long parentId) {
+//        List<Menu> menuTree = menuList.stream()
+//                .filter(menu -> menu.getParentId().equals(parentId))
+//                .collect(Collectors.toList());
+//
+//        menuTree.forEach(menu -> menu.setChildren(getChildren(menu, menuList)));
+//
+//        return menuTree;
+//    }
+//
+//    private List<Menu> getChildren(Menu menu, List<Menu> menuList) {
+//        List<Menu> childrenList = menuList.stream()
+//                .filter(m -> m.getParentId().equals(menu.getId()))
+//                .collect(Collectors.toList());
+//
+//        childrenList.forEach(child -> child.setChildren(getChildren(child, menuList)));
+//
+//        return childrenList;
+//    }
 
 }
 

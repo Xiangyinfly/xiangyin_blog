@@ -30,7 +30,7 @@ public class CommentController {
 
     @PostMapping
     public ResponseResult addComment(@RequestBody AddCommentDto commentDto) {
-        //先转换为Dto类
+        //先转换Dto类
         Comment comment = BeanCopyUtils.copyBean(commentDto, Comment.class);
         return commentService.addComment(comment);
     }
