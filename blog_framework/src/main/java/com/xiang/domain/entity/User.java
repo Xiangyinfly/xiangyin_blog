@@ -26,6 +26,7 @@ public class User implements Serializable {
     /**
      * 用户名
      */
+    //如何解决：后台系统要求字段为userName，前台系统要求字段为username
     @JsonProperty("username")
     private String userName;
 

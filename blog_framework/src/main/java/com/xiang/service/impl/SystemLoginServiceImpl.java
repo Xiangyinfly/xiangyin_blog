@@ -9,6 +9,7 @@ import com.xiang.service.LoginService;
 import com.xiang.utils.BeanCopyUtils;
 import com.xiang.utils.JwtUtils;
 import com.xiang.utils.RedisCache;
+import com.xiang.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -44,6 +45,13 @@ public class SystemLoginServiceImpl implements LoginService {
         HashMap<String, String> tokenMap = new HashMap<>();
         tokenMap.put("token",jwt);
         return ResponseResult.okResult(tokenMap);
+    }
+
+    @Override
+    public ResponseResult logout() {
+        Long userId = SecurityUtils.getUserId();
+        redisCache.deleteObject("login:"+userId);
+        return ResponseResult.okResult();
     }
 
 }

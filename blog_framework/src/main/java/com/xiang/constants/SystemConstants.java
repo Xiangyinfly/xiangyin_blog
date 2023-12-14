@@ -7,13 +7,9 @@ public class SystemConstants {
     /**
      * 文章是正常分布状态
      */
-    public static final int ARTICLE_STATUS_NORMAL = 0;
+    public static final String STATUS_NORMAL = "0";
     //默认分页页容量
     public static final int PAGE_SIZE = 10;
-    public static final String CATEGORY_NORMAL = "0";
-
-
-    public static final int Link_STATUS_NORMAL = 0;
 
     /**
      * 评论类型为：文章评论
@@ -25,5 +21,4 @@ public class SystemConstants {
     public static final String LINK_COMMENT = "1";
     public static final String MENU = "C";
     public static final String BUTTON = "F";
-    public static final Object STATUS_NORMAL = 0;
 }

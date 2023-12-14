@@ -1,6 +1,10 @@
 package com.xiang.config;
 
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -20,5 +24,16 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedHeaders("*")
         // 跨域允许时间
                 .maxAge(3600);
+    }
+
+    //配置long类型序列化后都变成string类型！！！
+    @Bean
+    public Jackson2ObjectMapperBuilderCustomizer jackson2ObjectMapperBuilderCustomizer() {
+        Jackson2ObjectMapperBuilderCustomizer cunstomizer = jacksonObjectMapperBuilder -> {
+            jacksonObjectMapperBuilder.serializerByType(Long.TYPE, ToStringSerializer.instance);
+            jacksonObjectMapperBuilder.serializerByType(Long.class, ToStringSerializer.instance);
+        };
+
+        return cunstomizer;
     }
 }

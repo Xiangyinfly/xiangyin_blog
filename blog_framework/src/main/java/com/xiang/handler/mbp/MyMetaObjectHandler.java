@@ -30,7 +30,15 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
 
     @Override
     public void updateFill(MetaObject metaObject) {
-        this.setFieldValByName("updateTime", new Date(), metaObject);
-        this.setFieldValByName(" ", SecurityUtils.getUserId(), metaObject);//此处的空字符串是什么意思
+        Long userId = null;
+        try {
+            userId = SecurityUtils.getUserId();
+        } catch (Exception e) {
+            //e.printStackTrace();
+        }
+        if (userId != null) {
+            this.setFieldValByName("updateTime", new Date(), metaObject);
+            this.setFieldValByName("updateBy", userId, metaObject);//此处的空字符串是什么意思
+        }
     }
 }

@@ -28,7 +28,6 @@ import java.util.List;
 public class LoginController {
     @Autowired
     private LoginService loginService;
-
     @Autowired
     private MenuService menuService;
     @Autowired
@@ -67,6 +66,11 @@ public class LoginController {
         List<Menu> menus = menuService.selectRouterMenuTreeByUserId(userId);
         //封装数据返回
         return ResponseResult.okResult(new RouterVo(menus));
+    }
+
+    @PostMapping("/user/logout")
+    public ResponseResult logout() {
+        return loginService.logout();
     }
 
 }

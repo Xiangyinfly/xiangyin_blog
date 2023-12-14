@@ -1,5 +1,7 @@
 package com.xiang.service;
 
+import com.xiang.domain.ResponseResult;
+import com.xiang.domain.dto.TagDto;
 import com.xiang.domain.entity.Tag;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -10,4 +12,15 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface TagService extends IService<Tag> {
 
+    ResponseResult pageTagList(Integer pageNum, Integer pageSize, TagDto tagDto);
+
+    ResponseResult addTag(Tag tag);
+
+    ResponseResult deleteTag(Long id);
+
+    ResponseResult getTag(Long id);
+
+    ResponseResult updateTag(Tag tag);
+
+    ResponseResult listAllTag();
 }

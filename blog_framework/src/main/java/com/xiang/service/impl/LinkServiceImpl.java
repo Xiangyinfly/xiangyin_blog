@@ -25,7 +25,7 @@ public class LinkServiceImpl extends ServiceImpl<LinkMapper, Link>
     @Override
     public ResponseResult getAllLink() {
         LambdaQueryWrapper<Link> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Link::getStatus, SystemConstants.Link_STATUS_NORMAL);
+        queryWrapper.eq(Link::getStatus, SystemConstants.STATUS_NORMAL);
         List<Link> links = list(queryWrapper);
         List<LinkListVo> linkListVos = BeanCopyUtils.copyBeanList(links, LinkListVo.class);
         return ResponseResult.okResult(linkListVos);

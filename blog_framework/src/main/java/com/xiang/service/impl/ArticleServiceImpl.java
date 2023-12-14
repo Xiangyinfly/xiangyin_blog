@@ -5,7 +5,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiang.constants.SystemConstants;
 import com.xiang.domain.ResponseResult;
+import com.xiang.domain.dto.AddArticleDto;
 import com.xiang.domain.entity.Article;
+import com.xiang.domain.entity.ArticleTag;
 import com.xiang.domain.entity.Category;
 import com.xiang.domain.vo.ArticleDetailVo;
 import com.xiang.domain.vo.ArticleListVo;
@@ -13,12 +15,14 @@ import com.xiang.domain.vo.HotArticleVo;
 import com.xiang.domain.vo.PageVo;
 import com.xiang.mapper.ArticleMapper;
 import com.xiang.service.ArticleService;
+import com.xiang.service.ArticleTagService;
 import com.xiang.service.CategoryService;
 import com.xiang.utils.BeanCopyUtils;
 import com.xiang.utils.RedisCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -33,11 +37,14 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     private CategoryService categoryService;
 
     @Autowired
+    private ArticleTagService articleTagService;
+
+    @Autowired
     private RedisCache redisCache;
     @Override
     public ResponseResult getHotArticleList() {
         LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Article::getStatus, SystemConstants.ARTICLE_STATUS_NORMAL);
+        queryWrapper.eq(Article::getStatus, SystemConstants.STATUS_NORMAL);
         queryWrapper.orderByDesc(Article::getViewCount);
         Page<Article> page = new Page<>(1, SystemConstants.PAGE_SIZE);
         page(page,queryWrapper);
@@ -61,7 +68,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
         //如果前端传入种类，就筛选；不传入就不筛选
         queryWrapper.eq(Objects.nonNull(categoryId) && categoryId > 0,Article::getCategoryId,categoryId);
-        queryWrapper.eq(Article::getStatus,SystemConstants.ARTICLE_STATUS_NORMAL);
+        queryWrapper.eq(Article::getStatus,SystemConstants.STATUS_NORMAL);
         queryWrapper.orderByDesc(Article::getIsTop);
         Page<Article> page = new Page<>(pageNum, pageSize);
         page(page,queryWrapper);
@@ -108,6 +115,20 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Override
     public ResponseResult updateViewCount(Long id) {
         redisCache.incrementCacheMapValue("article:viewCount",id.toString(),1);
+        return ResponseResult.okResult();
+    }
+
+    @Override
+    //加入事务
+    @Transactional
+    public ResponseResult addArticle(AddArticleDto articleDto) {
+        Article article = BeanCopyUtils.copyBean(articleDto, Article.class);
+        save(article);
+        List<ArticleTag> articleTags = articleDto.getTags()
+                .stream()
+                .map(tagId -> new ArticleTag(article.getId(), tagId))
+                .toList();
+        articleTagService.saveBatch(articleTags);
         return ResponseResult.okResult();
     }
 }
