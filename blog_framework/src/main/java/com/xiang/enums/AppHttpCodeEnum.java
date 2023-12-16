@@ -18,8 +18,10 @@ public enum AppHttpCodeEnum { // 成功
     PASSWORD_NOT_NULL(510, "密码不能为空"),
     EMAIL_NOT_NULL(511, "邮箱不能为空"),
     NICKNAME_EXIST(512, "昵称已存在"),
-    NAME_NOT_NULL(513, "名称不能为空"), NO_SUCH_TAG(514, "没有此标签"),
-    TAG_ALREADY_EXIST(514, "该标签已存在");
+    NAME_NOT_NULL(513, "名称不能为空"),
+    NO_SUCH_TAG(514, "没有此标签"),
+    TAG_ALREADY_EXIST(515, "该标签已存在"),
+    EXCEL_EXPORT_ERROR(516, "导出为excel失败");
     int code;
     String msg;
     AppHttpCodeEnum(int code, String errorMessage){

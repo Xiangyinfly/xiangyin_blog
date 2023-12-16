@@ -3,6 +3,7 @@ package com.xiang.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.xiang.domain.ResponseResult;
 import com.xiang.domain.entity.Category;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
 * @author chenwentao
@@ -14,4 +15,6 @@ public interface CategoryService extends IService<Category> {
     ResponseResult getCategoryList();
 
     ResponseResult listAllCategory();
+
+    void export(HttpServletResponse response);
 }

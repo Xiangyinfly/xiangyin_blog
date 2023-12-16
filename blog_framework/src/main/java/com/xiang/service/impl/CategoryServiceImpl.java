@@ -1,5 +1,6 @@
 package com.xiang.service.impl;
 
+import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiang.constants.SystemConstants;
@@ -8,13 +9,19 @@ import com.xiang.domain.entity.Article;
 import com.xiang.domain.entity.Category;
 import com.xiang.domain.vo.CategoryListVo;
 import com.xiang.domain.vo.CategoryVo;
+import com.xiang.domain.vo.ExcelCategoryVo;
+import com.xiang.enums.AppHttpCodeEnum;
 import com.xiang.service.ArticleService;
 import com.xiang.service.CategoryService;
 import com.xiang.mapper.CategoryMapper;
 import com.xiang.utils.BeanCopyUtils;
+import com.xiang.utils.JacksonUtils;
+import com.xiang.utils.WebUtils;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -53,6 +60,25 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category>
         List<Category> categoryList = list(queryWrapper);
         List<CategoryListVo> categoryVoList = BeanCopyUtils.copyBeanList(categoryList, CategoryListVo.class);
         return ResponseResult.okResult(categoryVoList);
+    }
+
+    @Override
+    public void export(HttpServletResponse response) {
+        try {
+            WebUtils.setDownLoadHeader("分类.xlsx",response);
+            List<Category> categoryList = list();
+            List<ExcelCategoryVo> excelCategoryVoList = BeanCopyUtils.copyBeanList(categoryList, ExcelCategoryVo.class);
+            EasyExcel
+                    .write(response.getOutputStream(),ExcelCategoryVo.class)
+                    .autoCloseStream(Boolean.FALSE)
+                    .sheet("分类导出")
+                    .doWrite(excelCategoryVoList);
+        } catch (Exception e) {
+            //失败也要返回数据
+            ResponseResult result = ResponseResult.errorResult(AppHttpCodeEnum.EXCEL_EXPORT_ERROR);
+            WebUtils.renderString(response, JacksonUtils.toJsonString(result));
+        }
+
     }
 }
 
