@@ -23,6 +23,7 @@ public class ArticleTag implements Serializable {
     /**
      * 文章id
      */
+    @TableId
     private Long articleId;
 
     /**

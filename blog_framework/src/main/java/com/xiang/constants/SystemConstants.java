@@ -1,11 +1,13 @@
 package com.xiang.constants;
 
+import com.qiniu.http.ProxyConfiguration;
+
 public class SystemConstants {
     /**
      * 文章是草稿 */
     public static final int ARTICLE_STATUS_DRAFT = 1;
     /**
-     * 文章是正常分布状态
+     * 正常状态
      */
     public static final String STATUS_NORMAL = "0";
     //默认分页页容量
@@ -21,4 +23,6 @@ public class SystemConstants {
     public static final String LINK_COMMENT = "1";
     public static final String MENU = "C";
     public static final String BUTTON = "F";
+    public static final String ADMIN = "1";
+    public static final String STATUS_ABNORMAL = "1";
 }

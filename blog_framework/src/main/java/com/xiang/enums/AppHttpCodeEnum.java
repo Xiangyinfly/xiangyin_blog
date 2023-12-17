@@ -21,10 +21,11 @@ public enum AppHttpCodeEnum { // 成功
     NAME_NOT_NULL(513, "名称不能为空"),
     NO_SUCH_TAG(514, "没有此标签"),
     TAG_ALREADY_EXIST(515, "该标签已存在"),
-    EXCEL_EXPORT_ERROR(516, "导出为excel失败");
+    EXCEL_EXPORT_ERROR(516, "导出为excel失败"),
+    NO_SUCH_MENU(517, "没有此菜单");
     int code;
     String msg;
-    AppHttpCodeEnum(int code, String errorMessage){
+    AppHttpCodeEnum(int code, String errorMessage) {
         this.code = code;
         this.msg = errorMessage;
     }

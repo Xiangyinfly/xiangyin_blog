@@ -6,13 +6,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiang.constants.SystemConstants;
 import com.xiang.domain.ResponseResult;
 import com.xiang.domain.dto.AddArticleDto;
+import com.xiang.domain.dto.UpdateArticleDto;
 import com.xiang.domain.entity.Article;
 import com.xiang.domain.entity.ArticleTag;
 import com.xiang.domain.entity.Category;
-import com.xiang.domain.vo.ArticleDetailVo;
-import com.xiang.domain.vo.ArticleListVo;
-import com.xiang.domain.vo.HotArticleVo;
-import com.xiang.domain.vo.PageVo;
+import com.xiang.domain.vo.*;
 import com.xiang.mapper.ArticleMapper;
 import com.xiang.service.ArticleService;
 import com.xiang.service.ArticleTagService;
@@ -130,5 +128,60 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                 .toList();
         articleTagService.saveBatch(articleTags);
         return ResponseResult.okResult();
+    }
+
+    @Override
+    public ResponseResult getArticleList_admin(Integer pageNum, Integer pageSize, String title, String summary) {
+        LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.like(Objects.nonNull(title),Article::getTitle,title);
+        queryWrapper.like(Objects.nonNull(summary),Article::getSummary,summary);
+        queryWrapper.eq(Article::getStatus,SystemConstants.STATUS_NORMAL);
+        queryWrapper.orderByDesc(Article::getCreateTime);//根据时间降序
+        Page<Article> page = new Page<>(pageNum, pageSize);
+        page(page,queryWrapper);
+        List<Article> records = page.getRecords();
+        List<AdminArticleListVo> articleListVos = BeanCopyUtils.copyBeanList(records, AdminArticleListVo.class);
+        PageVo pageVo = new PageVo(articleListVos, page.getTotal());
+        return ResponseResult.okResult(pageVo);
+    }
+
+    @Override
+    @Transactional
+    public ResponseResult updateArticle(UpdateArticleDto updateArticleDto) {
+        Article article = BeanCopyUtils.copyBean(updateArticleDto, Article.class);
+        updateById(article);
+        List<ArticleTag> articleTags = updateArticleDto.getTags()
+                .stream()
+                .map(tagId -> new ArticleTag(article.getId(), tagId))
+                .toList();
+        articleTagService.updateBatchById(articleTags);
+        //这里根据主键进行更新，因为ArticleTag有两个主键，目前指定主键为articleId
+        return ResponseResult.okResult();
+    }
+
+    @Override
+    @Transactional
+    public ResponseResult deleteArticle(Long id) {
+        removeById(id);
+        LambdaQueryWrapper<ArticleTag> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(ArticleTag::getArticleId,id);
+        articleTagService.remove(queryWrapper);
+        return ResponseResult.okResult();
+    }
+
+    @Override
+    public ResponseResult getArticleDetail_admin(Long id) {
+        LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Article::getId,id);
+        Article article = getOne(queryWrapper);
+        AdminArticleDetailsVo adminArticleDetailsVo = BeanCopyUtils.copyBean(article, AdminArticleDetailsVo.class);
+
+        LambdaQueryWrapper<ArticleTag> articleTagLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        articleTagLambdaQueryWrapper.eq(ArticleTag::getArticleId,id);
+        List<ArticleTag> articleTags = articleTagService.list(articleTagLambdaQueryWrapper);
+        List<Long> tagList = articleTags.stream().map(ArticleTag::getTagId).toList();
+        adminArticleDetailsVo.setTags(tagList);
+
+        return ResponseResult.okResult(adminArticleDetailsVo);
     }
 }
