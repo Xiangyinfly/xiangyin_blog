@@ -52,4 +52,13 @@ public class MenuController {
         return menuService.getTreeSelect();
     }
 
+    @SystemLog(businessName = "加载对应角色菜单列表树")
+    @GetMapping("/roleMenuTreeselect/{id}")
+    public ResponseResult getRoleMenuTreeselect(@PathVariable Long id) {
+        return menuService.getRoleMenuTreeselect(id);
+
+    }
+
+
+
 }

@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiang.constants.SystemConstants;
 import com.xiang.domain.ResponseResult;
 import com.xiang.domain.dto.AddRoleDto;
+import com.xiang.domain.dto.UpdateRoleDto;
 import com.xiang.domain.entity.Comment;
 import com.xiang.domain.entity.Role;
 import com.xiang.domain.entity.RoleMenu;
@@ -88,6 +89,19 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role>
         Role role = getById(id);
         RoleVo roleVo = BeanCopyUtils.copyBean(role, RoleVo.class);
         return ResponseResult.okResult(roleVo);
+    }
+
+    @Override
+    @Transactional
+    public ResponseResult updateRole(UpdateRoleDto updateRoleDto) {
+        Role role = BeanCopyUtils.copyBean(updateRoleDto, Role.class);
+        updateById(role);
+
+        List<Long> menuIds = updateRoleDto.getMenuIds();
+        List<RoleMenu> roleMenus = menuIds.stream().map(mi -> new RoleMenu(role.getId(), mi)).toList();
+        roleMenuService.updateBatchById(roleMenus);
+
+        return ResponseResult.okResult();
     }
 }
 

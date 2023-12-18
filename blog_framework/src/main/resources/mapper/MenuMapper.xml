@@ -47,4 +47,16 @@
         ORDER BY
         m.parent_id,m.order_num
     </select>
+    <select id="getMenu" resultType="com.xiang.domain.entity.Menu">
+        select
+        m.id, m.parent_id, m.menu_name
+        from `sys_menu` m
+        left join `sys_role_menu` rm on m.`id` = rm.`menu_id`
+        where
+        rm.`role_id` = #{id} and
+        m.`status` = 0 and
+        m.`del_flag` = 0
+        ORDER BY
+        m.parent_id,m.order_num
+    </select>
 </mapper>

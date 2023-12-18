@@ -2,6 +2,7 @@ package com.xiang.service;
 
 import com.xiang.domain.ResponseResult;
 import com.xiang.domain.dto.AddRoleDto;
+import com.xiang.domain.dto.UpdateRoleDto;
 import com.xiang.domain.entity.Role;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -23,4 +24,6 @@ public interface RoleService extends IService<Role> {
     ResponseResult addRole(AddRoleDto addRoleDto);
 
     ResponseResult getRole(Long id);
+
+    ResponseResult updateRole(UpdateRoleDto updateRoleDto);
 }

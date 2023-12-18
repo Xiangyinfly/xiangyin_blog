@@ -4,6 +4,7 @@ import com.xiang.annotation.SystemLog;
 import com.xiang.domain.ResponseResult;
 import com.xiang.domain.dto.AddRoleDto;
 import com.xiang.domain.dto.ChangeRoleStatusDto;
+import com.xiang.domain.dto.UpdateRoleDto;
 import com.xiang.domain.entity.Role;
 import com.xiang.service.RoleService;
 import com.xiang.utils.BeanCopyUtils;
@@ -42,4 +43,13 @@ public class RoleController {
     public ResponseResult getRole(@PathVariable Long id) {
         return roleService.getRole(id);
     }
+
+    @SystemLog(businessName = "更新角色")
+    @PutMapping
+    public ResponseResult updateRole(@RequestBody UpdateRoleDto updateRoleDto) {
+        return roleService.updateRole(updateRoleDto);
+    }
+
+
+
 }

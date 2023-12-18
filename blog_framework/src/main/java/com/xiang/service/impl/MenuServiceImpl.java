@@ -5,15 +5,20 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiang.constants.SystemConstants;
 import com.xiang.domain.ResponseResult;
 import com.xiang.domain.entity.Menu;
+import com.xiang.domain.entity.RoleMenu;
 import com.xiang.domain.vo.MenuListVo;
 import com.xiang.domain.vo.MenuTreeSelectVo;
 import com.xiang.domain.vo.MenuVo;
+import com.xiang.domain.vo.RoleMenuTreeselectVo;
 import com.xiang.enums.AppHttpCodeEnum;
 import com.xiang.exception.SystemException;
+import com.xiang.mapper.RoleMenuMapper;
 import com.xiang.service.MenuService;
 import com.xiang.mapper.MenuMapper;
+import com.xiang.service.RoleMenuService;
 import com.xiang.utils.BeanCopyUtils;
 import com.xiang.utils.SecurityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -139,7 +144,28 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu>
         return ResponseResult.okResult(menuTree);
     }
 
+    @Override
+    public ResponseResult getRoleMenuTreeselect(Long id) {
+        List<Menu> menuList = getBaseMapper().getMenu(id);
+        List<Long> menuIdList = menuList.stream().map(m -> m.getId()).toList();
+
+        List<MenuTreeSelectVo> menuTreeSelectVos = BeanCopyUtils.copyBeanList(menuList, MenuTreeSelectVo.class);
+        menuTreeSelectVos.forEach(m -> m.setLabel(
+                menuList.stream().filter(ml -> ml.getId().equals(m.getId())).toList().get(0).getMenuName()
+        ));
+        List<MenuTreeSelectVo> menuTree = buildMenuTreeSelect(menuTreeSelectVos, 0);
+
+        RoleMenuTreeselectVo roleMenuTreeselectVo = new RoleMenuTreeselectVo(menuTree, menuIdList);
+
+        return ResponseResult.okResult(roleMenuTreeselectVo);
+
+    }
+
     //构建树型结构
+    //TODO 构建树形结构的问题：
+    //1.传入的parentId如何确定。传入的parentId应为树的根结点
+    //2.menuList中不存在以menuTree中元素的id为parentId的元素，但依然存在其他元素。此时会返回null，导致递归结束！
+    //为什么会出现第二种：菜单列表是一个树形结构，但是非完全筛选可能会形成森林
     private List<Menu> buildMenuTree(List<Menu> menuList, long parentId) {
         List<Menu> menuTree = menuList.stream()
                 .filter(menu -> menu.getParentId().equals(parentId))
@@ -159,6 +185,58 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu>
 
         return menuTree;
     }
+
+
+    //我的解决方法，但是栈溢出
+    private List<Menu> builderMenuTree(List<Menu> menuList, List<Long> parentIdList,int index) {
+        long parentId = parentIdList.get(index);
+        List<Menu> menuTree = menuList.stream()
+                .filter(menu -> menu.getParentId().equals(parentId))
+                .collect(Collectors.toList());
+
+        menuTree.forEach(menu -> menu.setChildren(getChildren(menu, menuList)));
+
+        builderMenuTree(menuTree,parentIdList,index++);
+        return menuTree;
+    }
+
+    private List<Menu> getChildren(Menu menu, List<Menu> menuList) {
+        List<Menu> childrenList = menuList.stream()
+                .filter(m -> m.getParentId().equals(menu.getId()))
+                .collect(Collectors.toList());
+
+        childrenList.forEach(child -> child.setChildren(getChildren(child, menuList)));
+
+        return childrenList;
+    }
+
+    private List<MenuTreeSelectVo> builderMenuTreeSelect(List<MenuTreeSelectVo> menuList, List<Long> parentIdList,int index) {
+        long parentId = parentIdList.get(index);
+        List<MenuTreeSelectVo> menuTree = menuList.stream()
+                .filter(menu -> menu.getParentId().equals(parentId))
+                .collect(Collectors.toList());
+
+        menuTree.forEach(menu -> menu.setChildren(getChildrenSelect(menu, menuList)));
+
+        builderMenuTreeSelect(menuTree,parentIdList,index++);
+        return menuTree;
+    }
+
+    private List<MenuTreeSelectVo> getChildrenSelect(MenuTreeSelectVo menu, List<MenuTreeSelectVo> menuList) {
+        List<MenuTreeSelectVo> childrenList = menuList.stream()
+                .filter(m -> m.getParentId().equals(menu.getId()))
+                .collect(Collectors.toList());
+
+        childrenList.forEach(child -> child.setChildren(getChildrenSelect(child, menuList)));
+
+        return childrenList;
+    }
+
+
+
+
+
+
 
     //构建树
 //    private List<Menu> buildMenuTree(List<Menu> menuList, long parentId) {
