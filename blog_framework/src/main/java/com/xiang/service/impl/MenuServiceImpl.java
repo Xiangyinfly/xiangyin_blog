@@ -6,6 +6,7 @@ import com.xiang.constants.SystemConstants;
 import com.xiang.domain.ResponseResult;
 import com.xiang.domain.entity.Menu;
 import com.xiang.domain.vo.MenuListVo;
+import com.xiang.domain.vo.MenuTreeSelectVo;
 import com.xiang.domain.vo.MenuVo;
 import com.xiang.enums.AppHttpCodeEnum;
 import com.xiang.exception.SystemException;
@@ -16,6 +17,7 @@ import com.xiang.utils.SecurityUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 * @description 针对表【sys_menu(菜单权限表)】的数据库操作Service实现
 * @createDate 2023-12-11 20:25:19
 */
+
 @Service
 public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu>
     implements MenuService{
@@ -124,6 +127,18 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu>
         return ResponseResult.okResult();
     }
 
+    @Override
+    public ResponseResult getTreeSelect() {
+        List<Menu> menuList = list();
+        List<MenuTreeSelectVo> menuTreeSelectVos = BeanCopyUtils.copyBeanList(menuList, MenuTreeSelectVo.class);
+        menuTreeSelectVos.forEach(m -> m.setLabel(
+                menuList.stream().filter(ml -> ml.getId().equals(m.getId())).toList().get(0).getMenuName()
+        ));
+        List<MenuTreeSelectVo> menuTree = buildMenuTreeSelect(menuTreeSelectVos, 0L);
+
+        return ResponseResult.okResult(menuTree);
+    }
+
     //构建树型结构
     private List<Menu> buildMenuTree(List<Menu> menuList, long parentId) {
         List<Menu> menuTree = menuList.stream()
@@ -131,6 +146,16 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu>
                 .collect(Collectors.toList());
 
         menuTree.forEach(menu -> menu.setChildren(buildMenuTree(menuList,menu.getId())));
+
+        return menuTree;
+    }
+
+    private List<MenuTreeSelectVo> buildMenuTreeSelect(List<MenuTreeSelectVo> menuList, long parentId) {
+        List<MenuTreeSelectVo> menuTree = menuList.stream()
+                .filter(menu -> menu.getParentId().equals(parentId))
+                .collect(Collectors.toList());
+
+        menuTree.forEach(menu -> menu.setChildren(buildMenuTreeSelect(menuList,menu.getId())));
 
         return menuTree;
     }

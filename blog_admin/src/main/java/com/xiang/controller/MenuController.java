@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/content/menu")
+@RequestMapping("/system/menu")
 public class MenuController {
     @Autowired
     private MenuService menuService;
@@ -25,7 +25,6 @@ public class MenuController {
     @PostMapping
     public ResponseResult addMenu(@RequestBody Menu menu) {
         return menuService.addMenu(menu);
-
     }
 
     @SystemLog(businessName = "根据id查询菜单数据")
@@ -45,7 +44,12 @@ public class MenuController {
     @DeleteMapping("/{menuId}")
     public ResponseResult deleteMenu(@PathVariable Long menuId) {
         return menuService.deleteMenu(menuId);
+    }
 
+    @SystemLog(businessName = "获取菜单树")
+    @GetMapping("/treeselect")
+    public ResponseResult getTreeSelect() {
+        return menuService.getTreeSelect();
     }
 
 }

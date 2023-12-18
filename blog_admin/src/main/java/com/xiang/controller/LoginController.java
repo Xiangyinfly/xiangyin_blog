@@ -45,7 +45,6 @@ public class LoginController {
 
 
     @GetMapping("/getInfo")
-    @Operation(summary = "登录用户信息",description = "获取登录用户的权限、角色、基本信息并封装")
     public ResponseResult getInfo() {
         LoginUser loginUser = SecurityUtils.getLoginUser();
         User user = loginUser.getUser();
