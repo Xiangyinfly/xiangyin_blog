@@ -1,6 +1,7 @@
 package com.xiang.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.jeffreyning.mybatisplus.service.MppServiceImpl;
 import com.xiang.domain.entity.RoleMenu;
 import com.xiang.service.RoleMenuService;
 import com.xiang.mapper.RoleMenuMapper;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Service;
 * @createDate 2023-12-18 14:39:11
 */
 @Service
-public class RoleMenuServiceImpl extends ServiceImpl<RoleMenuMapper, RoleMenu>
+public class RoleMenuServiceImpl extends MppServiceImpl<RoleMenuMapper, RoleMenu>
     implements RoleMenuService{
 
 }

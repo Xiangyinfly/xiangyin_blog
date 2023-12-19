@@ -50,6 +50,11 @@ public class RoleController {
         return roleService.updateRole(updateRoleDto);
     }
 
+    @SystemLog(businessName = "删除角色")
+    @DeleteMapping("/{id}")
+    public ResponseResult deleteRole(@PathVariable Long id) {
+        return roleService.deleteRole(id);
+    }
 
 
 }

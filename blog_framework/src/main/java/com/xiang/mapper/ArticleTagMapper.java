@@ -1,5 +1,6 @@
 package com.xiang.mapper;
 
+import com.github.jeffreyning.mybatisplus.base.MppBaseMapper;
 import com.xiang.domain.entity.ArticleTag;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
@@ -11,7 +12,7 @@ import org.apache.ibatis.annotations.Mapper;
 * @Entity com.xiang.domain.entity.ArticleTag
 */
 @Mapper
-public interface ArticleTagMapper extends BaseMapper<ArticleTag> {
+public interface ArticleTagMapper extends MppBaseMapper<ArticleTag> {
 
 }
 

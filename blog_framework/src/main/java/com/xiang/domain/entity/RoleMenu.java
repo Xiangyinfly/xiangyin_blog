@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 
+import com.github.jeffreyning.mybatisplus.anno.MppMultiId;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,13 +23,13 @@ public class RoleMenu implements Serializable {
     /**
      * 角色ID
      */
-    @TableId
-    //此处指定role为主键
+    @MppMultiId
     private Long roleId;
 
     /**
      * 菜单ID
      */
+    @MppMultiId
     private Long menuId;
 
     @TableField(exist = false)

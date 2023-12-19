@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,8 +63,9 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu>
             menuList = menuMapper.selectRouterMenuTreeByUserId(userId);
         }
 
+        List<Long> parentIdList = menuList.stream().map(Menu::getParentId).toList();
         //构建tree
-        List<Menu> menuTree = buildMenuTree(menuList,0L);
+        List<Menu> menuTree = buildMenuTree(menuList, Collections.min(parentIdList));
         //List<Menu> menuTree = builderMenuTree(menuList,0L);
         return menuTree;
     }
@@ -139,7 +141,9 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu>
         menuTreeSelectVos.forEach(m -> m.setLabel(
                 menuList.stream().filter(ml -> ml.getId().equals(m.getId())).toList().get(0).getMenuName()
         ));
-        List<MenuTreeSelectVo> menuTree = buildMenuTreeSelect(menuTreeSelectVos, 0L);
+
+        List<Long> parentIdList = menuList.stream().map(Menu::getParentId).toList();
+        List<MenuTreeSelectVo> menuTree = buildMenuTreeSelect(menuTreeSelectVos, Collections.min(parentIdList));
 
         return ResponseResult.okResult(menuTree);
     }
@@ -153,7 +157,9 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu>
         menuTreeSelectVos.forEach(m -> m.setLabel(
                 menuList.stream().filter(ml -> ml.getId().equals(m.getId())).toList().get(0).getMenuName()
         ));
-        List<MenuTreeSelectVo> menuTree = buildMenuTreeSelect(menuTreeSelectVos, 0);
+
+        List<Long> parentIdList = menuList.stream().map(Menu::getParentId).toList();
+        List<MenuTreeSelectVo> menuTree = buildMenuTreeSelect(menuTreeSelectVos, Collections.min(parentIdList));
 
         RoleMenuTreeselectVo roleMenuTreeselectVo = new RoleMenuTreeselectVo(menuTree, menuIdList);
 
@@ -166,6 +172,8 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu>
     //1.传入的parentId如何确定。传入的parentId应为树的根结点
     //2.menuList中不存在以menuTree中元素的id为parentId的元素，但依然存在其他元素。此时会返回null，导致递归结束！
     //为什么会出现第二种：菜单列表是一个树形结构，但是非完全筛选可能会形成森林
+
+    //我的解决方法：暂且找到parentId中最小的作为根结点parentId
     private List<Menu> buildMenuTree(List<Menu> menuList, long parentId) {
         List<Menu> menuTree = menuList.stream()
                 .filter(menu -> menu.getParentId().equals(parentId))
@@ -188,49 +196,49 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu>
 
 
     //我的解决方法，但是栈溢出
-    private List<Menu> builderMenuTree(List<Menu> menuList, List<Long> parentIdList,int index) {
-        long parentId = parentIdList.get(index);
-        List<Menu> menuTree = menuList.stream()
-                .filter(menu -> menu.getParentId().equals(parentId))
-                .collect(Collectors.toList());
-
-        menuTree.forEach(menu -> menu.setChildren(getChildren(menu, menuList)));
-
-        builderMenuTree(menuTree,parentIdList,index++);
-        return menuTree;
-    }
-
-    private List<Menu> getChildren(Menu menu, List<Menu> menuList) {
-        List<Menu> childrenList = menuList.stream()
-                .filter(m -> m.getParentId().equals(menu.getId()))
-                .collect(Collectors.toList());
-
-        childrenList.forEach(child -> child.setChildren(getChildren(child, menuList)));
-
-        return childrenList;
-    }
-
-    private List<MenuTreeSelectVo> builderMenuTreeSelect(List<MenuTreeSelectVo> menuList, List<Long> parentIdList,int index) {
-        long parentId = parentIdList.get(index);
-        List<MenuTreeSelectVo> menuTree = menuList.stream()
-                .filter(menu -> menu.getParentId().equals(parentId))
-                .collect(Collectors.toList());
-
-        menuTree.forEach(menu -> menu.setChildren(getChildrenSelect(menu, menuList)));
-
-        builderMenuTreeSelect(menuTree,parentIdList,index++);
-        return menuTree;
-    }
-
-    private List<MenuTreeSelectVo> getChildrenSelect(MenuTreeSelectVo menu, List<MenuTreeSelectVo> menuList) {
-        List<MenuTreeSelectVo> childrenList = menuList.stream()
-                .filter(m -> m.getParentId().equals(menu.getId()))
-                .collect(Collectors.toList());
-
-        childrenList.forEach(child -> child.setChildren(getChildrenSelect(child, menuList)));
-
-        return childrenList;
-    }
+//    private List<Menu> builderMenuTree(List<Menu> menuList, List<Long> parentIdList,int index) {
+//        long parentId = parentIdList.get(index);
+//        List<Menu> menuTree = menuList.stream()
+//                .filter(menu -> menu.getParentId().equals(parentId))
+//                .collect(Collectors.toList());
+//
+//        menuTree.forEach(menu -> menu.setChildren(getChildren(menu, menuList)));
+//
+//        builderMenuTree(menuTree,parentIdList,index++);
+//        return menuTree;
+//    }
+//
+//    private List<Menu> getChildren(Menu menu, List<Menu> menuList) {
+//        List<Menu> childrenList = menuList.stream()
+//                .filter(m -> m.getParentId().equals(menu.getId()))
+//                .collect(Collectors.toList());
+//
+//        childrenList.forEach(child -> child.setChildren(getChildren(child, menuList)));
+//
+//        return childrenList;
+//    }
+//
+//    private List<MenuTreeSelectVo> builderMenuTreeSelect(List<MenuTreeSelectVo> menuList, List<Long> parentIdList,int index) {
+//        long parentId = parentIdList.get(index);
+//        List<MenuTreeSelectVo> menuTree = menuList.stream()
+//                .filter(menu -> menu.getParentId().equals(parentId))
+//                .collect(Collectors.toList());
+//
+//        menuTree.forEach(menu -> menu.setChildren(getChildrenSelect(menu, menuList)));
+//
+//        builderMenuTreeSelect(menuTree,parentIdList,index++);
+//        return menuTree;
+//    }
+//
+//    private List<MenuTreeSelectVo> getChildrenSelect(MenuTreeSelectVo menu, List<MenuTreeSelectVo> menuList) {
+//        List<MenuTreeSelectVo> childrenList = menuList.stream()
+//                .filter(m -> m.getParentId().equals(menu.getId()))
+//                .collect(Collectors.toList());
+//
+//        childrenList.forEach(child -> child.setChildren(getChildrenSelect(child, menuList)));
+//
+//        return childrenList;
+//    }
 
 
 

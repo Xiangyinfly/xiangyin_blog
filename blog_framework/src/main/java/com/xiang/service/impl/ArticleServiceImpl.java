@@ -126,7 +126,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                 .stream()
                 .map(tagId -> new ArticleTag(article.getId(), tagId))
                 .toList();
-        articleTagService.saveBatch(articleTags);
+        articleTagService.saveOrUpdateBatchByMultiId(articleTags);
         return ResponseResult.okResult();
     }
 
@@ -154,7 +154,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                 .stream()
                 .map(tagId -> new ArticleTag(article.getId(), tagId))
                 .toList();
-        articleTagService.updateBatchById(articleTags);
+        articleTagService.saveOrUpdateBatchByMultiId(articleTags);
         //这里根据主键进行更新，因为ArticleTag有两个主键，目前指定主键为articleId
         return ResponseResult.okResult();
     }

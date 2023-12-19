@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serializable;
 
+import com.github.jeffreyning.mybatisplus.anno.MppMultiId;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,12 +24,13 @@ public class ArticleTag implements Serializable {
     /**
      * 文章id
      */
-    @TableId
+    @MppMultiId
     private Long articleId;
 
     /**
      * 标签id
      */
+    @MppMultiId
     private Long tagId;
 
     @TableField(exist = false)

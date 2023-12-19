@@ -99,7 +99,20 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role>
 
         List<Long> menuIds = updateRoleDto.getMenuIds();
         List<RoleMenu> roleMenus = menuIds.stream().map(mi -> new RoleMenu(role.getId(), mi)).toList();
-        roleMenuService.updateBatchById(roleMenus);
+        roleMenuService.saveOrUpdateBatchByMultiId(roleMenus);
+
+        return ResponseResult.okResult();
+    }
+
+    @Override
+    @Transactional
+    public ResponseResult deleteRole(Long id) {
+        removeById(id);
+
+        LambdaQueryWrapper<RoleMenu> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(RoleMenu::getRoleId,id);
+        List<RoleMenu> roleMenus = roleMenuService.list(queryWrapper);
+        roleMenuService.removeBatchByIds(roleMenus);
 
         return ResponseResult.okResult();
     }

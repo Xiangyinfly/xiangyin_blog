@@ -1,5 +1,6 @@
 package com.xiang.mapper;
 
+import com.github.jeffreyning.mybatisplus.base.MppBaseMapper;
 import com.xiang.domain.entity.Menu;
 import com.xiang.domain.entity.RoleMenu;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -14,7 +15,7 @@ import java.util.List;
 * @Entity com.xiang.domain.entity.RoleMenu
 */
 @Mapper
-public interface RoleMenuMapper extends BaseMapper<RoleMenu> {
+public interface RoleMenuMapper extends MppBaseMapper<RoleMenu> {
 
 }
 

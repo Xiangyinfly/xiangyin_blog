@@ -1,10 +1,14 @@
 package com.xiang.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xiang.constants.SystemConstants;
 import com.xiang.domain.ResponseResult;
 import com.xiang.domain.entity.User;
+import com.xiang.domain.vo.PageVo;
 import com.xiang.domain.vo.UserInfoVo;
+import com.xiang.domain.vo.UserListVo;
 import com.xiang.enums.AppHttpCodeEnum;
 import com.xiang.exception.SystemException;
 import com.xiang.service.UserService;
@@ -15,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+
+import java.util.List;
 
 /**
 * @author chenwentao
@@ -71,6 +77,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         user.setPassword(encodePasswd);
         save(user);
         return ResponseResult.okResult();
+    }
+
+    @Override
+    public ResponseResult getUserList(Integer pageNum, Integer pageSize, String userName, String phonenumber, String status) {
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.like(StringUtils.hasText(userName),User::getUserName,userName);
+        queryWrapper.like(StringUtils.hasText(phonenumber),User::getPhonenumber,phonenumber);
+        queryWrapper.like(SystemConstants.STATUS_NORMAL.equals(status) || SystemConstants.STATUS_ABNORMAL.equals(status),User::getStatus,status);
+        Page<User> page = new Page<>(pageNum, pageSize);
+        page(page,queryWrapper);
+        List<UserListVo> userListVos = BeanCopyUtils.copyBeanList(page.getRecords(), UserListVo.class);
+        PageVo pageVo = new PageVo(userListVos, page.getTotal());
+        return ResponseResult.okResult(pageVo);
     }
 
     private boolean emailExist(String email) {
