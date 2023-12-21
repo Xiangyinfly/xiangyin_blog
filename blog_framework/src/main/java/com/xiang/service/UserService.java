@@ -1,6 +1,8 @@
 package com.xiang.service;
 
 import com.xiang.domain.ResponseResult;
+import com.xiang.domain.dto.AddUserDto;
+import com.xiang.domain.dto.UpdateUserDto;
 import com.xiang.domain.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -18,4 +20,12 @@ public interface UserService extends IService<User> {
     ResponseResult register(User user);
 
     ResponseResult getUserList(Integer pageNum, Integer pageSize, String userName, String phonenumber, String status);
+
+    ResponseResult addUser(AddUserDto addUserDto);
+
+    ResponseResult deleteUser(Long id);
+
+    ResponseResult getUserInfo(Long id);
+
+    ResponseResult updateUser(UpdateUserDto updateUserDto);
 }

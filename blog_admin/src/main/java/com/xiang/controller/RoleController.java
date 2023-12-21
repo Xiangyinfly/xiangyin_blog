@@ -56,5 +56,13 @@ public class RoleController {
         return roleService.deleteRole(id);
     }
 
+    @SystemLog(businessName = "查询正常角色列表")
+    @GetMapping("/listAllRole")
+    public ResponseResult listAllRole() {
+        return roleService.listAllRole();
+    }
+
+
+
 
 }

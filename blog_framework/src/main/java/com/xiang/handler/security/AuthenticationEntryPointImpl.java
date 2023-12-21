@@ -23,7 +23,6 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         authException.printStackTrace();
         ResponseResult result = null;
-        ObjectMapper objectMapper = new ObjectMapper();
         if (authException instanceof BadCredentialsException) {
             result = ResponseResult.errorResult(AppHttpCodeEnum.LOGIN_ERROR.getCode(),authException.getMessage());
         } else if (authException instanceof InsufficientAuthenticationException) {

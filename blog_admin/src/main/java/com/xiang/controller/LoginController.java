@@ -1,22 +1,19 @@
 package com.xiang.controller;
 
-import com.xiang.annotation.SystemLog;
 import com.xiang.domain.ResponseResult;
 import com.xiang.domain.entity.LoginUser;
 import com.xiang.domain.entity.Menu;
 import com.xiang.domain.entity.User;
-import com.xiang.domain.vo.AdminUserInfoVo;
+import com.xiang.domain.vo.AdminUserInfoLoginVo;
 import com.xiang.domain.vo.RouterVo;
 import com.xiang.domain.vo.UserInfoVo;
 import com.xiang.enums.AppHttpCodeEnum;
 import com.xiang.exception.SystemException;
-import com.xiang.service.BlogLoginService;
 import com.xiang.service.LoginService;
 import com.xiang.service.MenuService;
 import com.xiang.service.RoleService;
 import com.xiang.utils.BeanCopyUtils;
 import com.xiang.utils.SecurityUtils;
-import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -54,8 +51,8 @@ public class LoginController {
         List<String> roleKeyList = roleService.selectRoleKeyByUserId(user.getId());
 
         UserInfoVo userInfoVo = BeanCopyUtils.copyBean(user, UserInfoVo.class);
-        AdminUserInfoVo adminUserInfoVo = new AdminUserInfoVo(perms, roleKeyList, userInfoVo);
-        return ResponseResult.okResult(adminUserInfoVo);
+        AdminUserInfoLoginVo adminUserInfoLoginVo = new AdminUserInfoLoginVo(perms, roleKeyList, userInfoVo);
+        return ResponseResult.okResult(adminUserInfoLoginVo);
     }
 
     @GetMapping("/getRouters")

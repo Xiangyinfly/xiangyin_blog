@@ -154,6 +154,11 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                 .stream()
                 .map(tagId -> new ArticleTag(article.getId(), tagId))
                 .toList();
+
+        LambdaQueryWrapper<ArticleTag> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(ArticleTag::getArticleId,article.getId());
+        articleTagService.remove(queryWrapper);
+
         articleTagService.saveOrUpdateBatchByMultiId(articleTags);
         //这里根据主键进行更新，因为ArticleTag有两个主键，目前指定主键为articleId
         return ResponseResult.okResult();

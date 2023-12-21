@@ -25,6 +25,7 @@ import org.springframework.util.StringUtils;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -74,7 +75,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu>
     public ResponseResult getMenuList(String status, String menuName) {
         LambdaQueryWrapper<Menu> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(SystemConstants.STATUS_NORMAL.equals(status) || SystemConstants.STATUS_ABNORMAL.equals(status),Menu::getStatus,status);
-        queryWrapper.eq(StringUtils.hasText(menuName),Menu::getMenuName,menuName);
+        queryWrapper.eq(Objects.nonNull(menuName),Menu::getMenuName,menuName);
         queryWrapper.orderByAsc(Menu::getParentId);
         queryWrapper.orderByAsc(Menu::getOrderNum);
         List<Menu> menuList = list(queryWrapper);

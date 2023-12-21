@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
 * @author chenwentao
@@ -33,8 +34,8 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag>
     @Override
     public ResponseResult pageTagList(Integer pageNum, Integer pageSize, TagDto tagDto) {
         LambdaQueryWrapper<Tag> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(StringUtils.hasText(tagDto.getName()),Tag::getName, tagDto.getName());
-        queryWrapper.eq(StringUtils.hasText(tagDto.getRemark()),Tag::getRemark, tagDto.getRemark());
+        queryWrapper.eq(Objects.nonNull(tagDto.getName()),Tag::getName, tagDto.getName());
+        queryWrapper.eq(Objects.nonNull(tagDto.getRemark()),Tag::getRemark, tagDto.getRemark());
         Page<Tag> tagPage = new Page<>();
         tagPage.setCurrent(pageNum);
         tagPage.setSize(pageSize);

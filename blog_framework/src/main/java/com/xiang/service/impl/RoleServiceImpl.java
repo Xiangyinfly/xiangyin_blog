@@ -25,6 +25,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
 * @author chenwentao
@@ -54,7 +55,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role>
     @Override
     public ResponseResult roleList(Integer pageNum, Integer pageSize, String roleName, String status) {
         LambdaQueryWrapper<Role> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.like(StringUtils.hasText(roleName),Role::getRoleName,roleName);
+        queryWrapper.like(Objects.nonNull(roleName),Role::getRoleName,roleName);
         queryWrapper.eq(SystemConstants.STATUS_NORMAL.equals(status) || SystemConstants.STATUS_ABNORMAL.equals(status),Role::getStatus,status);
         Page<Role> page = new Page<>(pageNum, pageSize);
         page(page,queryWrapper);
@@ -97,9 +98,14 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role>
         Role role = BeanCopyUtils.copyBean(updateRoleDto, Role.class);
         updateById(role);
 
+        LambdaQueryWrapper<RoleMenu> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(RoleMenu::getRoleId,role.getId());
+        roleMenuService.remove(queryWrapper);
+
         List<Long> menuIds = updateRoleDto.getMenuIds();
         List<RoleMenu> roleMenus = menuIds.stream().map(mi -> new RoleMenu(role.getId(), mi)).toList();
         roleMenuService.saveOrUpdateBatchByMultiId(roleMenus);
+
 
         return ResponseResult.okResult();
     }
@@ -115,6 +121,14 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role>
         roleMenuService.removeBatchByIds(roleMenus);
 
         return ResponseResult.okResult();
+    }
+
+    @Override
+    public ResponseResult listAllRole() {
+        LambdaQueryWrapper<Role> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Role::getStatus,SystemConstants.STATUS_NORMAL);
+        List<Role> list = list(queryWrapper);
+        return ResponseResult.okResult(list);
     }
 }
 
